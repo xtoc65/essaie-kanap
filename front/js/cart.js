@@ -122,19 +122,19 @@ let ville;
 let email;
 
 let prenomRegExp = new RegExp(
-    '^[a-zA-Z]+$', 'g' //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.
+    /^[a-zA-Z]+$/g //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.
     );                 // le $ designe la fin de l'expresion réfgulière. g est le marqueur pour dire global;
 let nomRegExp = new RegExp(
-    '^[a-zA-Z]+$', 'g' //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.
+    /^[a-zA-Z]+$/g //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.
 );                 // le $ designe la fin de l'expresion réfgulière. g est le marqueur pour dire global
 let adresseRegExp = new RegExp(
-    '^[a-zA-Z0-9-\s]+$', 'g' //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.
+    /^[.0-9a-zA-ZÀ-ÿ\s,-]+$/g //Le début d'une expresion regulière commence par des caractéres qu'on peux ecrire plusieur fois.
 );                       // le $ designe la fin de l'expresion réfgulière. g est le marqueur pour dire global
 let villeRegExp = new RegExp(
-    '^[a-zA-Z-]+$', 'g' //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.
+    /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/g //Le début d'une expresion regulière commence par des caractéres qu'on peux ecrire plusieur fois.
 );                            // le $ designe la fin de l'expresion réfgulière. g est le marqueur pour dire global
 let emailRegExp = new RegExp(
-    '^[a-zA-Z0-9\.-_]+[@]{1}[a-zA-Z0-9\.-_]+[\.]{1}[a-z]{2,3}$', 'g' //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.On doit retrouvé le @ 1 seule fois
+    /^[a-zA-Z0-9\.-_]+[@]{1}[a-zA-Z0-9\.-_]+[\.]{1}[a-z]{2,3}$/g //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.On doit retrouvé le @ 1 seule fois
 );                                                                // le $ designe la fin de l'expresion réfgulière. g est le marqueur pour dire global
 
 prenomEl.addEventListener('change', function(){
