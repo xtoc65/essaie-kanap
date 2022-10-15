@@ -3,12 +3,17 @@ afficher(panier);
 
 async function afficher(panier)
 {
-   let section= document.getElementById('cart__items');
+   let section= document.getElementById('cart__items'); // on va cherche dans le DOM l'id dans cart.html
+   if(!panier)  //si le pannier est vide retourner le message d'alerte
+   {
+    alert("le panier est vide");
+    return;
+   }
    for(produit of panier)
    {
         articleElement= document.createElement('article');
         const produitInfo= await fetch("http://localhost:3000/api/products/" + produit.id)
-        .then(function(res){
+        .then(function(res){ 
             if(res.ok){
                 return res.json();
             }
@@ -122,10 +127,10 @@ let ville;
 let email;
 
 let prenomRegExp = new RegExp(
-    /^[a-zA-Z]+$/g //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.
+    /^[a-zA-ZÀ-ÿ]+$/g //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.
     );                 // le $ designe la fin de l'expresion réfgulière. g est le marqueur pour dire global;
 let nomRegExp = new RegExp(
-    /^[a-zA-Z]+$/g //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.
+    /^[a-zA-ZÀ-ÿ]+$/g //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.
 );                 // le $ designe la fin de l'expresion réfgulière. g est le marqueur pour dire global
 let adresseRegExp = new RegExp(
     /^[.0-9a-zA-ZÀ-ÿ\s,-]+$/g //Le début d'une expresion regulière commence par des caractéres qu'on peux ecrire plusieur fois.
@@ -164,7 +169,7 @@ const validationNom = function (nomEl){
 };
 
 adresseEl.addEventListener('change', function(){
-    validationAdresse(this);
+    validationAdresse(this); 
 });
 const validationAdresse = function (adresseEl){
     if(adresseRegExp.test(adresseEl.value)){
@@ -217,7 +222,7 @@ function commander(event){
         city : ville,
         email : email
     };
-    products = [];
+    products = [];//création d'un tableau vide
     panier.forEach(produit => products.push(produit.id));
     fetch("http://localhost:3000/api/products/order", {
 	    method: 'POST',
@@ -234,9 +239,9 @@ function commander(event){
         };
     })
     .then(res => {
-        console.log(res);
         if(res.orderId){
-            alert("commande validé on va te redirigé vers la page de confirmation je vais faire ca dans la semaine");
+            document.location.href = `confirmation.html?orderId=${res.orderId}`;
+            localStorage.clear();
         }
     }
     );    

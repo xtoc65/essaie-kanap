@@ -40,7 +40,7 @@ function gestionPanier(){
 
 function ajouterAuPanier(produitSelectionner){ //ajouté un produit au panier
     if (panier == null){
-        panier = []; 
+        panier = []; //création d'un tableau vide
     } 
     if (produitSelectionner.quantity <= 0){
         alert ("Veuillez choisir un nombre d'article")
