@@ -11,7 +11,7 @@ async function afficher(panier)
    }
    for(produit of panier)
    {
-        articleElement= document.createElement('article');
+        articleElement= document.createElement('article'); // aller dans le DOM puis crée un element HTML
         const produitInfo= await fetch("http://localhost:3000/api/products/" + produit.id)
         .then(function(res){ 
             if(res.ok){
@@ -100,7 +100,7 @@ function supprimerProduit(){
                 const foundIndex = panier.findIndex(p => p.id == produitId && p.color == produitColor);
                 if (foundIndex != -1)
                 {
-                    suppirmerElement.closest('.cart__item').remove();
+                    suppirmerElement.closest('.cart__item').remove(); //supprimer l'élement du DOM
                     panier.splice(foundIndex,1);
                     localStorage.setItem("panier", JSON.stringify(panier));
                     calculerTotal();
@@ -127,10 +127,10 @@ let ville;
 let email;
 
 let prenomRegExp = new RegExp(
-    /^[a-zA-ZÀ-ÿ]+$/g //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.
+    /^[a-zA-ZÀ-ÿ\-]+$/g //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.
     );                 // le $ designe la fin de l'expresion réfgulière. g est le marqueur pour dire global;
 let nomRegExp = new RegExp(
-    /^[a-zA-ZÀ-ÿ]+$/g //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.
+    /^[a-zA-ZÀ-ÿ-]+$/g //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.
 );                 // le $ designe la fin de l'expresion réfgulière. g est le marqueur pour dire global
 let adresseRegExp = new RegExp(
     /^[.0-9a-zA-ZÀ-ÿ\s,-]+$/g //Le début d'une expresion regulière commence par des caractéres qu'on peux ecrire plusieur fois.
@@ -224,7 +224,8 @@ function commander(event){
     };
     products = [];//création d'un tableau vide
     panier.forEach(produit => products.push(produit.id));
-    fetch("http://localhost:3000/api/products/order", {
+    // Récupération des données de l'API avec la méthode fetch
+    fetch("http://localhost:3000/api/products/order", { //URL de l'API
 	    method: 'POST',
 	    headers: { 
             'Accept': 'application/json', 
@@ -233,15 +234,15 @@ function commander(event){
 	    body: JSON.stringify({contact:contact, products:products})
     }).then(function(res){
         if(res.ok){
-            return res.json();
+            return res.json();//Obtention des reponses .json
         }else{
             alert("la commande n'est pas valide");
         };
     })
     .then(res => {
         if(res.orderId){
-            document.location.href = `confirmation.html?orderId=${res.orderId}`;
-            localStorage.clear();
+            document.location.href = `confirmation.html?orderId=${res.orderId}`; // aler cherche dans le DOM le html pour ajouté le numéro de comande
+            localStorage.clear(); // netoyer le pannier quand la commande est passer
         }
     }
     );    

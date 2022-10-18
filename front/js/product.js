@@ -1,25 +1,30 @@
-const currentUrl = new URL(window.location.href);
-const productId = currentUrl.searchParams.get("id");
+const currentUrl = new URL(window.location.href);// renvoie le href, l'URL de la page en cours
+const productId = currentUrl.searchParams.get("id"); // va nous donner l'id du produit 
 let panier = JSON.parse(localStorage.getItem('panier'));
 
-fetch("http://localhost:3000/api/products/" + productId)
+// Récupération des données de l'API avec la méthode fetch
+fetch("http://localhost:3000/api/products/" + productId)//URL de l'API et l'Id du produit
 .then(function(res){
     if(res.ok){
-        return res.json();
+        return res.json();//Obtention des reponses .json
     }
 })
 .then(res => afficher(res));
 
 function afficher(produit){
-    document.querySelector(".item__img").innerHTML = `<img src=${produit.imageUrl} alt=${produit.altTxt}>`;
-    document.getElementById("title").textContent = produit.name;
+    //Obtenir le premier élément avec class="item__img" et permet de mettre du HMTL dans le DOM avec innerHTML
+    document.querySelector(".item__img").innerHTML = `<img src=${produit.imageUrl} alt=${produit.altTxt}>`; 
+    // on va dans le DOM et on accède a l'ID dans le HTML et permet de mettre du texte avec textContent
+    document.getElementById("title").textContent = produit.name; 
     document.getElementById("price").textContent = produit.price;
-    document.getElementById("description").textContent = produit.description;
-    for (color of produit.colors){
-        const colorOption = document.createElement('option');
+    document.getElementById("description").textContent = produit.description; 
+    //Pour chaque produit.colors on le met dans une variable qu'on appelle color
+    for (color of produit.colors){//permet de répété une instruction plusieur fois
+        const colorOption = document.createElement('option');//Creation de la balise <option> dans le HTML
         colorOption.setAttribute('value', color);
         colorOption.textContent= color;
-        document.getElementById("colors").appendChild(colorOption);
+        //appendChild permet d'ajouté sans écrasé se qui existe
+        document.getElementById("colors").appendChild(colorOption); 
     }
 }
 
