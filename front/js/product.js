@@ -28,11 +28,14 @@ function afficher(produit){
     }
 }
 
+// Creation de l'evenement au clic du button d'ajout au panier
 function gestionPanier(){
     const bouton = document.getElementById("addToCart");
     bouton.addEventListener("click", function(){
+        // parseInt de la fonction quantityProduct pour analyser ma chaine de caractère en nombre entier
         const quantity = parseInt(document.getElementById("quantity").value);
         const color = document.getElementById("colors").value;
+        // Creation d'un objet type à envoyer dans localStorage
         const produitSelectionner = {
             id:productId,
             quantity:quantity,
@@ -51,19 +54,25 @@ function ajouterAuPanier(produitSelectionner){ //ajouté un produit au panier
         alert ("Veuillez choisir un nombre d'article")
         return;
     }
-    if(!produitSelectionner.color.length){
+    //si la couleur du produit sélectionner est vide alors on retourne une alerte
+    //length regarde la longueur de la chaine de caractère
+    if(!produitSelectionner.color.length){ 
         alert ("Veuillez choisir une couleur")
         return;
     }
-    let foundProduct = panier.find(p => p.id == produitSelectionner.id && p.color == produitSelectionner.color);
-    if(foundProduct != undefined){
-        foundProduct.quantity += produitSelectionner.quantity;
-    }else{
-        panier.push(produitSelectionner);
+    //find -> recherche dans le panier
+    //p.id ->Se qu'il y a dans le panier, produitSelectionner.id -> produit selectionner
+    //On verifie donc si les ID sont les m̂ et on fait pareille avec la couleur
+    //&& -> verifie si les deux condition sont vrai
+    let produitTrouver = panier.find(p => p.id == produitSelectionner.id && p.color == produitSelectionner.color);
+    // quand on trouve le produit dans le panier il faut changer la quantité
+    if(produitTrouver != undefined){ //different de undefined il est donc dans le panier
+        produitTrouver.quantity += produitSelectionner.quantity; //on change donc la quantité
+    }else{ 
+        panier.push(produitSelectionner); //produit ajouté au panier
     }
     
     localStorage.setItem("panier", JSON.stringify(panier));
 }
 
-gestionPanier();
-
+gestionPanier(); // appeller la fonction gestion panier 

@@ -1,9 +1,10 @@
 let panier = JSON.parse(localStorage.getItem('panier'));
-afficher(panier);
+afficher(panier);//appelle la fonction aficher panier 
 
+//
 async function afficher(panier)
 {
-   let section= document.getElementById('cart__items'); // on va cherche dans le DOM l'id dans cart.html
+   let section = document.getElementById('cart__items'); // on va cherche dans le DOM l'id dans cart.html
    if(!panier)  //si le pannier est vide retourner le message d'alerte
    {
     alert("le panier est vide");
@@ -12,14 +13,17 @@ async function afficher(panier)
    for(produit of panier)
    {
         articleElement= document.createElement('article'); // aller dans le DOM puis crée un element HTML
-        const produitInfo= await fetch("http://localhost:3000/api/products/" + produit.id)
+        // Récupération des données de l'API avec la méthode fetch
+        const produitInfo = await fetch("http://localhost:3000/api/products/" + produit.id)//URL de l'API et l'Id du produit
         .then(function(res){ 
             if(res.ok){
-                return res.json();
+                return res.json();//Obtention des reponses .json
             }
         });
+        //on utilise produit. pour allez le cherchez dans le local Storage
+        //on utilise produitInfo. pour allez le cherchez dans l'API
         articleElement.innerHTML=` 
-        <article class="cart__item" data-id="${produit.id}" data-color="${produit.color}">
+        <article class="cart__item" data-id="${produit.id}" data-color="${produit.color}">  
             <div class="cart__item__img">
                   <img src=${produitInfo.imageUrl} alt=${produitInfo.altTxt}>
             </div>
@@ -41,29 +45,36 @@ async function afficher(panier)
             </div>
         </article>
         `; 
-        section.appendChild(articleElement);
+        section.appendChild(articleElement); //on ajoute dans le DOM 
     }     
-    modifierQuantite();
-    supprimerProduit();
-    calculerTotal(); 
+    modifierQuantite(); //appelle la fonction modifier quantite
+    supprimerProduit();//appelle la fonction supprimer produit
+    calculerTotal(); //appelle la fonction calculer total 
 }
 
 //modifier la quantité d'un produit du panier
 function modifierQuantite()
-{
-    document.querySelectorAll('.itemQuantity').forEach(
+{ 
+    //on renvoie tous les éléments de la classe itemQuantity
+    document.querySelectorAll('.itemQuantity').forEach( //appelle une fonction pour chaque élément du tableau.
         quantityElement => 
         {
-            quantityElement.addEventListener("click", ()=>
+            quantityElement.addEventListener("click", ()=> // addEventListener Ajoute un événement de clic à un élément
             {
+                //closest Trouve l'élément le plus proche qui correspond au sélecteur CSS ". cart__item"
+                // getAttribute Obtient la valeur de l'attribut de la classe d'un élément ici data-id
                 const produitId = quantityElement.closest('.cart__item').getAttribute('data-id');
                 const produitColor = quantityElement.closest('.cart__item').getAttribute('data-color');
+                //find -> recherche dans le panier
+                //p.id ->Se qu'il y a dans le panier, produitId -> const produitId
+                //On verifie donc si les ID sont les m̂ et on fait pareille avec la couleur
+                //&& -> verifie si les deux condition sont vrai
                 const foundProduct = panier.find(p => p.id == produitId && p.color == produitColor);
                 if (foundProduct!=undefined)
                 {
                     foundProduct.quantity = quantityElement.value; 
-                    localStorage.setItem("panier", JSON.stringify(panier));
-                    calculerTotal();
+                    localStorage.setItem("panier", JSON.stringify(panier)); // on enregistre dans le localStorage
+                    calculerTotal();//appelle la fonction calculer total 
                 }        
             })
         }
@@ -72,38 +83,45 @@ function modifierQuantite()
 
 //calculer un prix et la quantité d'un produit du panier
 function calculerTotal(){
+    //On commence avec la quantite et le prix vide
     let totalQuantite = 0;  
-    let totalPrix = 0;         
-    document.querySelectorAll('.cart__item__content').forEach(
+    let totalPrix = 0;  
+    // on renvoie tous les éléments de la classe cart__item__content       
+    document.querySelectorAll('.cart__item__content').forEach(//appelle une fonction pour chaque élément du tableau.
         contentEl => {
             quantite = contentEl.querySelector('.itemQuantity').value; 
             prix = contentEl.querySelector('.cart__item__content__description').querySelector(':last-child').textContent;
+            // on utilise parseInt pour renvoyer un entier
             totalQuantite += parseInt(quantite);
-            totalPrix += parseInt(quantite) * parseInt(prix);
+            //le prix total = la quantité + le prix
+            totalPrix += parseInt(quantite) * parseInt(prix);  
         }
     )
 
-    document.getElementById('totalQuantity').textContent = totalQuantite;
-    document.getElementById('totalPrice').innerText = totalPrix;
+    document.getElementById('totalQuantity').textContent = totalQuantite; //Recuperation de l'ID #totalQuantity du HTML
+    document.getElementById('totalPrice').innerText = totalPrix;//Recuperation de l'ID #totalPrice du HTML
 
 }
 
 
 //supprimer un produit du panier
 function supprimerProduit(){ 
-    document.querySelectorAll('.deleteItem').forEach(
+     // on renvoie tous les éléments de la classe deleteItem
+    document.querySelectorAll('.deleteItem').forEach(//appelle une fonction pour chaque élément du tableau
         suppirmerElement =>{
-            suppirmerElement.addEventListener("click", ()=>
+            suppirmerElement.addEventListener("click", ()=> // addEventListener Ajoute un événement de clic à un élément
             {
-                const produitId = suppirmerElement.closest('.cart__item').getAttribute('data-id');
+                //closest Trouve l'élément le plus proche qui correspond au sélecteur CSS ". cart__item"
+                const produitId = suppirmerElement.closest('.cart__item').getAttribute('data-id'); //getAttribute Obtient la valeur de l'attribut de classe d'un élément ‘data-id’
                 const produitColor = suppirmerElement.closest('.cart__item').getAttribute('data-color');
+                //findIndex() renvoie l'index du premier élément dans un tableau qui satisfait la fonction de test fournie.
                 const foundIndex = panier.findIndex(p => p.id == produitId && p.color == produitColor);
                 if (foundIndex != -1)
                 {
                     suppirmerElement.closest('.cart__item').remove(); //supprimer l'élement du DOM
-                    panier.splice(foundIndex,1);
-                    localStorage.setItem("panier", JSON.stringify(panier));
-                    calculerTotal();
+                    panier.splice(foundIndex,1);//On modifie le tableaux panier
+                    localStorage.setItem("panier", JSON.stringify(panier));// on enregistre dans le localStorage
+                    calculerTotal();//appelle la fonction calculer total 
                 }  
             })
         }
@@ -206,13 +224,13 @@ const validationEmail = function (emailEl){
         email = null;
     }
 };
-
+//passer la commande
 function commander(event){
     event.preventDefault();
     if(prenom == null || nom == null || adresse == null || ville == null || email == null){
         alert("veulliez remplir le fomulaire correctement");
-    }
-    if(!panier.length){
+    }    
+    if(!panier.length){//si le panier est vide
         alert("veuillez remplir le panier");
     }
     contact = {
@@ -226,12 +244,12 @@ function commander(event){
     panier.forEach(produit => products.push(produit.id));
     // Récupération des données de l'API avec la méthode fetch
     fetch("http://localhost:3000/api/products/order", { //URL de l'API
-	    method: 'POST',
+	    method: 'POST', // on crée ou modifie une resource
 	    headers: { 
-            'Accept': 'application/json', 
-            'Content-Type': 'application/json' 
+            'Accept': 'application/json', // indique se que l'on attent
+            'Content-Type': 'application/json' // indique les donner qu'on envoie
         },
-	    body: JSON.stringify({contact:contact, products:products})
+	    body: JSON.stringify({contact:contact, products:products})  
     }).then(function(res){
         if(res.ok){
             return res.json();//Obtention des reponses .json
@@ -241,7 +259,7 @@ function commander(event){
     })
     .then(res => {
         if(res.orderId){
-            document.location.href = `confirmation.html?orderId=${res.orderId}`; // aler cherche dans le DOM le html pour ajouté le numéro de comande
+            document.location.href = `confirmation.html?orderId=${res.orderId}`; // aller cherche dans le DOM le html pour ajouté le numéro de comande
             localStorage.clear(); // netoyer le pannier quand la commande est passer
         }
     }
