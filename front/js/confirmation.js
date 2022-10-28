@@ -1,4 +1,4 @@
-// on va récupérer l’URL du page courante
+// On indique quelle URL est actuellement consultée
 const url = window.location.href;
 const urlObject = new URL(url);
 //on va retourne la première valeur associée au paramètre de recherche donné

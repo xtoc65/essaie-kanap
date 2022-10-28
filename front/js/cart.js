@@ -1,11 +1,11 @@
 let panier = JSON.parse(localStorage.getItem('panier'));
 afficher(panier);//appelle la fonction aficher panier 
 
-//
+
 async function afficher(panier)
 {
    let section = document.getElementById('cart__items'); // on va cherche dans le DOM l'id dans cart.html
-   if(!panier)  //si le pannier est vide retourner le message d'alerte
+   if(!panier)  //si le panier est vide retourner le message d'alerte
    {
     alert("le panier est vide");
     return;
@@ -14,14 +14,16 @@ async function afficher(panier)
    {
         articleElement= document.createElement('article'); // aller dans le DOM puis crée un element HTML
         // Récupération des données de l'API avec la méthode fetch
-        const produitInfo = await fetch("http://localhost:3000/api/products/" + produit.id)//URL de l'API et l'Id du produit
+        // on attend que les détailles du produit arrive puis la fonction peux reprendre
+        const produitInfo = await fetch("http://localhost:3000/api/products/" + produit.id)//URL de l'API plus l'Id du produit
         .then(function(res){ 
             if(res.ok){
                 return res.json();//Obtention des reponses .json
             }
         });
-        //on utilise produit. pour allez le cherchez dans le local Storage
-        //on utilise produitInfo. pour allez le cherchez dans l'API
+        /* la fonction afficher peux reprendre
+        on utilise produit. pour allez le cherchez dans le local Storage
+        on utilise produitInfo. pour allez le cherchez dans l'API*/
         articleElement.innerHTML=` 
         <article class="cart__item" data-id="${produit.id}" data-color="${produit.color}">  
             <div class="cart__item__img">
@@ -72,7 +74,10 @@ function modifierQuantite()
                 const foundProduct = panier.find(p => p.id == produitId && p.color == produitColor);
                 if (foundProduct!=undefined)
                 {
-                    foundProduct.quantity = quantityElement.value; 
+                    if(quantityElement.value > 100){
+                        quantityElement.value = 100;
+                    }
+                    foundProduct.quantity = parseInt(quantityElement.value); 
                     localStorage.setItem("panier", JSON.stringify(panier)); // on enregistre dans le localStorage
                     calculerTotal();//appelle la fonction calculer total 
                 }        
@@ -146,24 +151,26 @@ let email;
 
 let prenomRegExp = new RegExp(
     /^[a-zA-ZÀ-ÿ\-]+$/g //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.
-    );                 // le $ designe la fin de l'expresion réfgulière. g est le marqueur pour dire global;
+    );                 // le $ designe la fin de l'expresion régulière. g est le marqueur pour dire global;
 let nomRegExp = new RegExp(
     /^[a-zA-ZÀ-ÿ-]+$/g //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.
-);                 // le $ designe la fin de l'expresion réfgulière. g est le marqueur pour dire global
+);                 // le $ designe la fin de l'expresion régulière. g est le marqueur pour dire global
 let adresseRegExp = new RegExp(
     /^[.0-9a-zA-ZÀ-ÿ\s,-]+$/g //Le début d'une expresion regulière commence par des caractéres qu'on peux ecrire plusieur fois.
-);                       // le $ designe la fin de l'expresion réfgulière. g est le marqueur pour dire global
+);                       // le $ designe la fin de l'expresion régulière. g est le marqueur pour dire global
 let villeRegExp = new RegExp(
     /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/g //Le début d'une expresion regulière commence par des caractéres qu'on peux ecrire plusieur fois.
-);                            // le $ designe la fin de l'expresion réfgulière. g est le marqueur pour dire global
+);                            // le $ designe la fin de l'expresion régulière. g est le marqueur pour dire global
 let emailRegExp = new RegExp(
     /^[a-zA-Z0-9\.-_]+[@]{1}[a-zA-Z0-9\.-_]+[\.]{1}[a-z]{2,3}$/g //Le début du texte commence par des caractéres qu'on peux ecrire plusieur fois.On doit retrouvé le @ 1 seule fois
-);                                                                // le $ designe la fin de l'expresion réfgulière. g est le marqueur pour dire global
+);                                                                // le $ designe la fin de l'expresion régulière. g est le marqueur pour dire global
 
 prenomEl.addEventListener('change', function(){
-    validationPrenom(this);
+    validationPrenom(this);//validationAdresse s'applique sur l'appelant de addEventListener qui est adresseEl
 });
 const validationPrenom = function (prenomEl){
+    //on cherche la correspondance d'une chaine de caractère
+    //value -> valeur
     if(prenomRegExp.test(prenomEl.value)){
         document.getElementById("firstNameErrorMsg").textContent="";
         prenom = prenomEl.value;
@@ -187,7 +194,7 @@ const validationNom = function (nomEl){
 };
 
 adresseEl.addEventListener('change', function(){
-    validationAdresse(this); 
+    validationAdresse(this); //validationAdresse s'applique sur l'appelant de addEventListener qui est adresseEl
 });
 const validationAdresse = function (adresseEl){
     if(adresseRegExp.test(adresseEl.value)){
@@ -244,12 +251,12 @@ function commander(event){
     panier.forEach(produit => products.push(produit.id));
     // Récupération des données de l'API avec la méthode fetch
     fetch("http://localhost:3000/api/products/order", { //URL de l'API
-	    method: 'POST', // on crée ou modifie une resource
+	    method: 'POST', // on crée une commande
 	    headers: { 
             'Accept': 'application/json', // indique se que l'on attent
             'Content-Type': 'application/json' // indique les donner qu'on envoie
         },
-	    body: JSON.stringify({contact:contact, products:products})  
+	    body: JSON.stringify({contact:contact, products:products}) //corps du message
     }).then(function(res){
         if(res.ok){
             return res.json();//Obtention des reponses .json
@@ -257,9 +264,10 @@ function commander(event){
             alert("la commande n'est pas valide");
         };
     })
+    //function fléchée
     .then(res => {
         if(res.orderId){
-            document.location.href = `confirmation.html?orderId=${res.orderId}`; // aller cherche dans le DOM le html pour ajouté le numéro de comande
+            document.location.href = `confirmation.html?orderId=${res.orderId}`; // aller cherche dans le DOM le html pour ajouté le numéro de commande
             localStorage.clear(); // netoyer le pannier quand la commande est passer
         }
     }

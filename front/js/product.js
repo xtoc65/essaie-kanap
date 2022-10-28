@@ -50,14 +50,14 @@ function ajouterAuPanier(produitSelectionner){ //ajouté un produit au panier
     if (panier == null){
         panier = []; //création d'un tableau vide
     } 
-    if (produitSelectionner.quantity <= 0){
-        alert ("Veuillez choisir un nombre d'article")
+    if (produitSelectionner.quantity <= 0 || produitSelectionner.quantity > 100){
+        alert ("Veuillez choisir une quantité correcte entre 1 et 100");
         return;
     }
     //si la couleur du produit sélectionner est vide alors on retourne une alerte
     //length regarde la longueur de la chaine de caractère
     if(!produitSelectionner.color.length){ 
-        alert ("Veuillez choisir une couleur")
+        alert ("Veuillez choisir une couleur");
         return;
     }
     //find -> recherche dans le panier
@@ -65,14 +65,20 @@ function ajouterAuPanier(produitSelectionner){ //ajouté un produit au panier
     //On verifie donc si les ID sont les m̂ et on fait pareille avec la couleur
     //&& -> verifie si les deux condition sont vrai
     let produitTrouver = panier.find(p => p.id == produitSelectionner.id && p.color == produitSelectionner.color);
+
     // quand on trouve le produit dans le panier il faut changer la quantité
     if(produitTrouver != undefined){ //different de undefined il est donc dans le panier
-        produitTrouver.quantity += produitSelectionner.quantity; //on change donc la quantité
+        produitTrouver.quantity += parseInt(produitSelectionner.quantity); //on change donc la quantité
+        if(produitTrouver.quantity > 100){
+            alert(`le total pour le produit a dépassé 100 dans le panier, la quantité actuelle est ${produitTrouver.quantity}`);
+            return;
+        }
     }else{ 
         panier.push(produitSelectionner); //produit ajouté au panier
     }
     
     localStorage.setItem("panier", JSON.stringify(panier));
+    alert("votre produit a bien été ajoutez dans le panier");
 }
 
 gestionPanier(); // appeller la fonction gestion panier 
